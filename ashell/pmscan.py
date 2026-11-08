@@ -20,7 +20,9 @@ import argparse
 import csv
 import json
 import os
+import socket
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.request
@@ -42,13 +44,53 @@ COLUMNS = ["ts_utc", "slug", "question", "outcome", "token_id", "best_bid", "bes
 
 # ---------------- HTTP (nur lesen) ----------------
 
+def curl_works() -> bool:
+    """In a-Shell haengt Pythons urllib, das eingebaute curl funktioniert."""
+    out = os.path.join(tempfile.gettempdir(), "pmscan_curltest.txt")
+    try:
+        rc = os.system(f'curl --version > "{out}"')
+        with open(out, encoding="utf-8", errors="replace") as fh:
+            ok = rc == 0 and "curl" in fh.read().lower()
+        os.remove(out)
+        return ok
+    except OSError:
+        return False
+
+
 class Api:
-    def __init__(self, gamma: str = GAMMA, clob: str = CLOB, timeout: float = 10.0) -> None:
+    def __init__(self, gamma: str = GAMMA, clob: str = CLOB, timeout: float = 10.0, use_curl: bool = False) -> None:
         self.gamma, self.clob, self.timeout = gamma.rstrip("/"), clob.rstrip("/"), timeout
+        self.use_curl = use_curl
+        socket.setdefaulttimeout(timeout)  # auch DNS/Handshake duerfen nicht ewig haengen
+
+    def _curl(self, method: str, url: str, body: object) -> object:
+        tmp = tempfile.gettempdir()
+        out, inp = os.path.join(tmp, "pmscan_resp.json"), os.path.join(tmp, "pmscan_req.json")
+        if os.path.exists(out):
+            os.remove(out)
+        cmd = f'curl -s -f -m {int(self.timeout)} -A "pmscan-readonly/1.0" -H "Accept: application/json"'
+        if body is not None:
+            with open(inp, "w", encoding="utf-8") as fh:
+                json.dump(body, fh)
+            cmd += f' -X POST -H "Content-Type: application/json" --data-binary "@{inp}"'
+        rc = os.system(f'{cmd} -o "{out}" "{url}"')
+        if rc != 0 or not os.path.exists(out):
+            raise OSError(f"curl Fehlercode {rc}")
+        with open(out, encoding="utf-8") as fh:
+            return json.load(fh)
 
     def _call(self, method: str, url: str, body: object = None) -> object:
         if (method, urlsplit(url).path) not in ALLOWED:
             raise PermissionError(f"{method} {url} ist kein erlaubter Lese-Aufruf")
+        if self.use_curl:
+            last = None
+            for attempt in range(3):
+                try:
+                    return self._curl(method, url, body)
+                except (OSError, ValueError) as e:
+                    last = str(e)
+                time.sleep(min(2 ** attempt, 8))
+            raise ConnectionError(f"{method} {urlsplit(url).netloc}{urlsplit(url).path}: {last}")
         data = json.dumps(body).encode() if body is not None else None
         headers = {"User-Agent": "pmscan-readonly/1.0", "Accept": "application/json"}
         if data is not None:
@@ -289,6 +331,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--out", default=LOG, help="CSV-Datei")
     p.add_argument("--summary", action="store_true", help="nur vorhandene CSV auswerten")
     p.add_argument("--no-clear", action="store_true", help="Bildschirm nicht leeren")
+    p.add_argument("--http", choices=["auto", "curl", "python"], default="curl",
+                   help="Netzwerkweg (Standard curl, in a-Shell der verlaessliche Weg)")
     p.add_argument("--gamma", default=GAMMA, help=argparse.SUPPRESS)
     p.add_argument("--clob", default=CLOB, help=argparse.SUPPRESS)
     a = p.parse_args(argv)
@@ -301,7 +345,9 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     try:
         print("Polymarket-Scanner startet (nur lesen).")
-        return run(Api(a.gamma, a.clob), a.minutes, a.interval, a.markets, a.fee, a.top, not a.no_clear, a.out)
+        use_curl = a.http == "curl" or (a.http == "auto" and curl_works())
+        print("Verbindung über " + ("curl" if use_curl else "Python"))
+        return run(Api(a.gamma, a.clob, use_curl=use_curl), a.minutes, a.interval, a.markets, a.fee, a.top, not a.no_clear, a.out)
     except KeyboardInterrupt:
         print("\nGestoppt.\n")
         print(summarize(a.out))
