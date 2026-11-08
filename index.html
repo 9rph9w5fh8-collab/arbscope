@@ -1,0 +1,1273 @@
+<title>Arbscope Paper Desk</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: sticky status header, one scrolling tab panel, fixed tab bar at the bottom (mobile-first, 360px+). */
+:root {
+  color-scheme: dark;
+  --bg: #04070b;
+  --panel: #0a121a;
+  --panel-2: #0f1b26;
+  --line: #19303f;
+  --fg: #cfe7ef;
+  --muted: #6c8999;
+  --cyan: #22d3ee;
+  --magenta: #f043c8;
+  --green: #3ddc84;
+  --red: #ff5a6e;
+  --amber: #ffb547;
+  --ink-on-accent: #031015;
+  --font-display: "Chakra Petch", "Arial Narrow", system-ui, sans-serif;
+  --font-data: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --tabbar-h: 64px;
+}
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-data); font-size: 14px; line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+  -webkit-text-size-adjust: 100%;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--panel); }
+*, *::before, *::after { box-sizing: border-box; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+/* header */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: var(--panel); border-bottom: 1px solid var(--line);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 10px;
+  display: grid; gap: 8px;
+}
+.top-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.brand { font-family: var(--font-display); font-weight: 700; font-size: 20px; letter-spacing: .06em; color: var(--cyan); margin-right: auto; }
+.brand span { color: var(--magenta); }
+.badge { font-weight: 800; font-size: 11px; letter-spacing: .08em; padding: 3px 8px; border-radius: 4px; border: 1px solid currentColor; }
+.badge.paper { color: var(--amber); }
+.badge.demo { color: var(--ink-on-accent); background: var(--magenta); border-color: var(--magenta); }
+.feeds { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; padding: 3px 8px; border-radius: 999px; background: var(--panel-2); border: 1px solid var(--line); white-space: nowrap; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; }
+.s-LIVE .dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.s-STALE .dot { background: var(--amber); }
+.s-OFFLINE .dot { background: var(--red); }
+.s-DEMO .dot { background: var(--magenta); }
+.s-PAUSE .dot { background: var(--muted); }
+.overall { font-weight: 800; letter-spacing: .06em; }
+.s-LIVE.overall { color: var(--green); } .s-STALE.overall { color: var(--amber); } .s-OFFLINE.overall { color: var(--red); }
+.s-DEMO.overall { color: var(--magenta); } .s-PAUSE.overall { color: var(--muted); }
+
+/* content */
+main {
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 14px calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 24px);
+  display: grid; gap: 14px; max-width: 980px; margin: 0 auto;
+}
+.banner { border: 1px solid var(--red); background: color-mix(in srgb, var(--red) 10%, var(--panel)); border-radius: 8px; padding: 12px; display: grid; gap: 8px; }
+.banner.demo { border-color: var(--magenta); background: color-mix(in srgb, var(--magenta) 10%, var(--panel)); }
+.banner h2 { font-family: var(--font-display); font-size: 16px; margin: 0; }
+.banner p { margin: 0; color: var(--fg); font-size: 13px; }
+section.tab { display: grid; gap: 14px; min-width: 0; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; min-width: 0; }
+.panel h2 { font-family: var(--font-display); font-size: 15px; font-weight: 700; letter-spacing: .04em; margin: 0 0 8px; color: var(--cyan); text-wrap: balance; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.pos { color: var(--green); } .neg { color: var(--red); } .warn { color: var(--amber); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.btn {
+  min-height: 48px; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--panel-2); font-weight: 700; cursor: pointer; touch-action: manipulation;
+}
+.btn:active { transform: translateY(1px); }
+.btn.cyan { border-color: var(--cyan); color: var(--cyan); }
+.btn.magenta { border-color: var(--magenta); color: var(--magenta); }
+.btn.green { background: var(--green); border-color: var(--green); color: var(--ink-on-accent); }
+.btn.red { border-color: var(--red); color: var(--red); }
+.btn.full { width: 100%; }
+.btn[disabled] { opacity: .45; }
+
+/* live cards */
+.pairs { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.pcard { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; cursor: pointer; text-align: left; width: 100%; display: grid; gap: 6px; }
+.pcard.sel { border-color: var(--cyan); box-shadow: 0 0 0 1px var(--cyan) inset; }
+.pcard .hd { display: flex; align-items: center; gap: 8px; }
+.pcard .sym { font-family: var(--font-display); font-weight: 700; font-size: 17px; }
+.qt { display: grid; grid-template-columns: 1fr auto auto; gap: 2px 12px; font-size: 12px; }
+.qt .v { text-align: right; }
+.qt .bin { color: var(--cyan); } .qt .spot { color: var(--magenta); } .qt .perp { color: var(--green); }
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.metric { background: var(--panel-2); border-radius: 6px; padding: 5px 7px; }
+.metric span { display: block; font-size: 10px; color: var(--muted); }
+.metric strong { font-size: 13px; }
+.chart { width: 100%; height: 220px; display: block; }
+.legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.legend i { display: inline-block; width: 14px; height: 3px; vertical-align: middle; margin-right: 5px; border-radius: 2px; }
+
+/* scanner */
+.scan { display: grid; gap: 8px; }
+.srow { display: grid; grid-template-columns: 52px 1fr; gap: 4px 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+.srow:first-child { border-top: 0; }
+.srow .sym { font-family: var(--font-display); font-weight: 700; font-size: 15px; grid-row: span 3; align-self: start; }
+.strat { display: grid; grid-template-columns: 72px 1fr auto; gap: 8px; align-items: center; font-size: 12px; }
+.bar { height: 8px; background: var(--panel-2); border-radius: 4px; position: relative; overflow: hidden; }
+.bar b { position: absolute; inset: 0 auto 0 0; background: var(--cyan); border-radius: 4px; }
+.bar::after { content: ""; position: absolute; top: -2px; bottom: -2px; left: 66.6%; width: 2px; background: var(--fg); opacity: .6; }
+.bar.hot b { background: var(--green); }
+.tag { font-size: 10px; font-weight: 800; letter-spacing: .06em; padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+.tag.sig { background: var(--green); color: var(--ink-on-accent); }
+.tag.off { color: var(--muted); border: 1px solid var(--line); }
+.tag.stale { color: var(--amber); border: 1px solid var(--amber); }
+
+/* tables */
+.tw { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 520px; }
+th, td { text-align: left; padding: 6px 6px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; }
+td.r, th.r { text-align: right; }
+.empty { color: var(--muted); padding: 6px 0; font-size: 13px; }
+
+/* paper */
+.kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+@media (min-width: 640px) { .kpis { grid-template-columns: repeat(4, 1fr); } }
+.kpi { background: var(--panel-2); border-radius: 6px; padding: 8px 10px; }
+.kpi span { display: block; font-size: 11px; color: var(--muted); }
+.kpi strong { font-size: 18px; font-weight: 800; }
+.verdict { font-family: var(--font-display); font-size: 17px; font-weight: 700; margin: 6px 0 2px; }
+.poscard { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 8px 0; border-top: 1px solid var(--line); align-items: center; }
+.poscard:first-child { border-top: 0; }
+
+/* settings */
+.form { display: grid; gap: 12px; }
+.field { display: grid; gap: 4px; }
+.field label { font-size: 12px; color: var(--muted); }
+.field input[type="number"] { min-height: 48px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; width: 100%; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; }
+.seg .btn.on, .pairchip.on, .toggle.on { background: var(--cyan); color: var(--ink-on-accent); border-color: var(--cyan); }
+.pairgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 6px; }
+.pairchip { min-height: 44px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); font-weight: 700; cursor: pointer; }
+.toggle { min-height: 48px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); font-weight: 700; padding: 8px 12px; text-align: left; cursor: pointer; }
+textarea { width: 100%; min-height: 160px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 8px; font-size: 11px; }
+.log { display: grid; gap: 2px; font-size: 12px; max-height: 420px; overflow-y: auto; }
+.log div { padding: 3px 0; border-bottom: 1px dashed var(--line); overflow-wrap: anywhere; }
+.log .t { color: var(--muted); margin-right: 6px; }
+.log .warn { color: var(--amber); } .log .err { color: var(--red); } .log .good { color: var(--green); }
+
+/* tab bar */
+nav.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+  background: var(--panel); border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: max(8px, env(safe-area-inset-left, 0px));
+  padding-right: max(8px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: repeat(4, 1fr);
+}
+nav.tabs button {
+  min-height: var(--tabbar-h); background: none; border: 0; border-top: 2px solid transparent;
+  color: var(--muted); font-weight: 700; font-size: 12px; cursor: pointer; letter-spacing: .03em;
+}
+nav.tabs button[aria-selected="true"] { color: var(--cyan); border-top-color: var(--cyan); }
+
+/* dialog + toast */
+.modal { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,.7); display: grid; place-items: center; padding: 16px; }
+.modal .box { background: var(--panel); border: 1px solid var(--red); border-radius: 10px; padding: 16px; max-width: 380px; width: 100%; display: grid; gap: 12px; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 12px);
+  z-index: 45; background: var(--fg); color: var(--bg); padding: 10px 14px; border-radius: 8px; font-weight: 700; font-size: 13px; max-width: calc(100vw - 32px); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<header class="top">
+  <div class="top-row">
+    <div class="brand">ARB<span>SCOPE</span></div>
+    <span class="badge paper" title="Nur Spielgeld, keine echten Orders">PAPER</span>
+    <span class="badge demo" id="demoBadge" hidden>DEMO · SIMULIERT</span>
+    <span class="chip overall s-OFFLINE" id="overall"><span class="dot"></span><span id="overallTxt">OFFLINE</span></span>
+  </div>
+  <div class="feeds" id="feedChips"></div>
+</header>
+
+<main>
+  <div id="banners"></div>
+
+  <section class="tab" id="tab-live" aria-label="Live">
+    <div class="panel">
+      <h2 id="chartTitle">Mid-Kurse, letzte 60 s</h2>
+      <canvas class="chart" id="liveChart" aria-label="Mid-Kurse der drei Märkte"></canvas>
+      <div class="legend"><span><i style="background:var(--cyan)"></i>Binance Spot</span><span><i style="background:var(--magenta)"></i>Bitget Spot</span><span><i style="background:var(--green)"></i>Bitget Perp</span><span>Abstand in bps zu Binance</span></div>
+    </div>
+    <div class="pairs" id="pairCards"></div>
+  </section>
+
+  <section class="tab" id="tab-scan" aria-label="Scanner" hidden>
+    <div class="panel">
+      <h2>Signale je Paar</h2>
+      <p class="small muted" style="margin:0 0 6px">Balken = Vorteil im Verhältnis zur Mindestschwelle. Die helle Linie markiert die Schwelle (Fees beider Legs + Spread + Puffer). Nur rechts davon gibt es ein Signal.</p>
+      <div class="scan" id="scanList"></div>
+    </div>
+    <div class="panel">
+      <h2>Letzte Signale</h2>
+      <div class="tw" id="sigTable"></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-paper" aria-label="Paper" hidden>
+    <div class="panel">
+      <div class="row" style="justify-content:space-between">
+        <h2 style="margin:0">Paper-Konto <span class="badge paper">PAPER</span></h2>
+        <button class="btn" id="autoBtn">Auto-Trading: aus</button>
+      </div>
+      <div class="kpis" style="margin-top:10px" id="kpis"></div>
+      <p class="small muted" id="haltNote" style="margin:8px 0 0"></p>
+    </div>
+    <div class="panel">
+      <h2>Equity: netto gegen brutto</h2>
+      <canvas class="chart" id="eqChart" aria-label="Equity-Kurve"></canvas>
+      <div class="legend"><span><i style="background:var(--green)"></i>Netto (nach Fees)</span><span><i style="background:var(--cyan)"></i>Brutto (vor Fees)</span></div>
+    </div>
+    <div class="panel">
+      <h2>Statistik</h2>
+      <div id="stats"></div>
+    </div>
+    <div class="panel">
+      <h2>Offene Positionen</h2>
+      <div id="positions"></div>
+    </div>
+    <div class="panel">
+      <h2>Abgeschlossene Trades</h2>
+      <div class="tw" id="trades"></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-set" aria-label="Log und Einstellungen" hidden>
+    <div class="panel">
+      <h2>Kosten und Ausführung</h2>
+      <div class="form">
+        <div class="grid2">
+          <div class="field"><label for="sLatency">Latenz bis zum Fill (ms)</label><input id="sLatency" type="number" min="0" max="3000" step="50" inputmode="numeric"></div>
+          <div class="field"><label for="sFee">Taker-Fee je Leg (bps)</label><input id="sFee" type="number" min="0" max="50" step="0.5" inputmode="decimal"></div>
+          <div class="field"><label for="sBuffer">Sicherheitspuffer (bps)</label><input id="sBuffer" type="number" min="0" max="50" step="0.5" inputmode="decimal"></div>
+          <div class="field"><label for="sStop">Stop je Trade (bps)</label><input id="sStop" type="number" min="5" max="200" step="1" inputmode="numeric"></div>
+          <div class="field"><label for="sWindow">Lead-Lag-Fenster (ms)</label><input id="sWindow" type="number" min="200" max="3000" step="50" inputmode="numeric"></div>
+          <div class="field"><label for="sHoldLead">Lead-Lag Haltezeit (ms)</label><input id="sHoldLead" type="number" min="500" max="30000" step="250" inputmode="numeric"></div>
+          <div class="field"><label for="sHoldArb">Spread/Basis max. Haltezeit (s)</label><input id="sHoldArb" type="number" min="5" max="3600" step="5" inputmode="numeric"></div>
+        </div>
+        <div class="field"><label>Hebel</label>
+          <div class="seg" id="levSeg"><button class="btn" data-lev="1">1x</button><button class="btn" data-lev="2">2x</button></div>
+        </div>
+        <p class="small muted" style="margin:0">Fest: max. 0,5 % Risiko je Trade, Tagesstopp bei −2 %, höchstens 3 offene Positionen, Startkapital 1.000 USDT.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Strategien</h2>
+      <div class="form" id="stratToggles"></div>
+    </div>
+    <div class="panel">
+      <h2>Paare (max. 10)</h2>
+      <div class="pairgrid" id="pairPicker"></div>
+      <p class="small muted" id="pairNote" style="margin:8px 0 0"></p>
+    </div>
+    <div class="panel">
+      <h2>Gerät</h2>
+      <div class="form">
+        <button class="btn cyan full" id="wakeBtn">Bildschirm wach halten: aus</button>
+        <div class="row">
+          <button class="btn" id="expCsv">Trades als CSV</button>
+          <button class="btn" id="expJson">Alles als JSON</button>
+        </div>
+        <div id="exportBox" hidden class="form">
+          <textarea id="exportText" readonly aria-label="Exportdaten"></textarea>
+          <div class="row"><button class="btn cyan" id="copyBtn">Kopieren</button><button class="btn" id="saveBtn" hidden>Als Datei speichern</button></div>
+        </div>
+        <button class="btn red full" id="resetBtn">Konto und Log zurücksetzen</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Log</h2>
+      <div class="log" id="logList"></div>
+    </div>
+  </section>
+</main>
+
+<nav class="tabs" role="tablist" aria-label="Bereiche">
+  <button role="tab" data-tab="live" aria-selected="true">Live</button>
+  <button role="tab" data-tab="scan" aria-selected="false">Scanner</button>
+  <button role="tab" data-tab="paper" aria-selected="false">Paper</button>
+  <button role="tab" data-tab="set" aria-selected="false">Log/Einst.</button>
+</nav>
+
+<div class="modal" id="confirmModal" hidden>
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="cfTitle">
+    <h2 id="cfTitle" style="margin:0;font-family:var(--font-display)">Wirklich zurücksetzen?</h2>
+    <p style="margin:0" id="cfText">Löscht Trades, offene Positionen, Equity-Kurve und Log dieses Modus. Das Konto startet wieder mit 1.000 USDT.</p>
+    <div class="grid2"><button class="btn" id="cfNo">Abbrechen</button><button class="btn red" id="cfYes">Zurücksetzen</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+"use strict";
+/*CORE-START*/
+// Pure helpers. No DOM, no network. Tested separately.
+const CORE = (() => {
+  const bps = (a, b) => (a / b - 1) * 1e4;
+  const mid = (bk) => (bk.bid + bk.ask) / 2;
+  const spreadBps = (bk) => (bk.ask - bk.bid) / mid(bk) * 1e4;
+
+  // Threshold: taker fee on entry + exit for every leg, the spread you pay to get out, plus a buffer.
+  const requiredBps = (legs, feeBps, spreadsBps, bufferBps) => 2 * legs * feeBps + spreadsBps + bufferBps;
+
+  // Latest sample with t <= target (hist sorted ascending by t).
+  function valueAt(hist, target) {
+    let lo = 0, hi = hist.length - 1, ans = null;
+    while (lo <= hi) {
+      const m = (lo + hi) >> 1;
+      if (hist[m].t <= target) { ans = hist[m]; lo = m + 1; } else hi = m - 1;
+    }
+    return ans;
+  }
+
+  // Binance move minus Bitget move over the window, in bps. Positive = Bitget lags an up-move.
+  function leadLagGap(lead, lag, now, windowMs) {
+    if (!lead.length || !lag.length) return null;
+    const a0 = valueAt(lead, now - windowMs), b0 = valueAt(lag, now - windowMs);
+    if (!a0 || !b0) return null;
+    return bps(lead[lead.length - 1].v, a0.v) - bps(lag[lag.length - 1].v, b0.v);
+  }
+
+  // Average fill price walking the book. Beyond visible depth: last level +/- 10 bps penalty.
+  function vwap(levels, qty, side) {
+    if (!levels || !levels.length || !(qty > 0)) return null;
+    let rem = qty, cost = 0, last = null;
+    for (const [p, s] of levels) {
+      const take = Math.min(rem, s);
+      cost += take * p; rem -= take; last = p;
+      if (rem <= 1e-12) break;
+    }
+    if (rem > 1e-12) cost += rem * (side === "buy" ? last * 1.001 : last * 0.999);
+    return cost / qty;
+  }
+
+  const legPnl = (side, qty, entry, exit) => (side === "buy" ? exit - entry : entry - exit) * qty;
+
+  // Notional per leg so that hitting the stop (plus all fees) loses at most riskPct of equity.
+  function sizeNotional(o) {
+    const riskUsd = o.equity * o.riskPct / 100;
+    const lossPerUsd = (o.stopBps + 2 * o.legs * o.feeBps) / 1e4;
+    const byRisk = riskUsd / lossPerUsd;
+    const byCap = Math.min(o.equity * o.lev / o.maxPos, o.equity * o.lev - o.openNotional) / o.legs;
+    return Math.max(0, Math.min(byRisk, byCap));
+  }
+
+  const T95 = [12.706, 4.303, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262, 2.228, 2.201, 2.179, 2.160, 2.145, 2.131,
+    2.120, 2.110, 2.101, 2.093, 2.086, 2.080, 2.074, 2.069, 2.064, 2.060, 2.056, 2.052, 2.048, 2.045, 2.042];
+  const tCrit = (df) => df <= 30 ? T95[df - 1] : df <= 60 ? 2.0 : df <= 120 ? 1.98 : 1.96;
+
+  // Mean net result per trade with a 95 % t-interval.
+  function tradeStats(xs) {
+    const n = xs.length;
+    if (n < 2) return { n, mean: n ? xs[0] : null, lo: null, hi: null, verdict: "few" };
+    const mean = xs.reduce((a, b) => a + b, 0) / n;
+    const sd = Math.sqrt(xs.reduce((a, b) => a + (b - mean) ** 2, 0) / (n - 1));
+    const half = tCrit(n - 1) * sd / Math.sqrt(n);
+    const lo = mean - half, hi = mean + half;
+    return { n, mean, sd, lo, hi, verdict: lo <= 0 && hi >= 0 ? "none" : lo > 0 ? "pos" : "neg" };
+  }
+
+  const dayKey = (t) => { const d = new Date(t); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); };
+
+  function toCsv(rows, cols) {
+    const esc = (v) => { const s = v == null ? "" : String(v); return /[",;\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    return [cols.join(","), ...rows.map((r) => cols.map((c) => esc(r[c])).join(","))].join("\n");
+  }
+
+  return { bps, mid, spreadBps, requiredBps, valueAt, leadLagGap, vwap, legPnl, sizeNotional, tradeStats, tCrit, dayKey, toCsv };
+})();
+/*CORE-END*/
+
+/*ENGINE-START*/
+// Paper-trading engine. Works on a plain state object S; side effects only through S.deps.
+const ENGINE = (() => {
+  const C = CORE;
+  const STALE_MS = 2000;
+  const RISK_PCT = 0.5, DAILY_STOP_PCT = 2, MAX_POS = 3, START = 1000, MIN_NOTIONAL = 10, COOLDOWN_MS = 5000;
+  const STRATS = {
+    lead: { name: "Lead-Lag", legsOf: (dir) => [{ venue: "perp", side: dir > 0 ? "buy" : "sell" }] },
+    cross: { name: "Spread", legsOf: (dir) => dir > 0
+      ? [{ venue: "spot", side: "buy" }, { venue: "bin", side: "sell" }]
+      : [{ venue: "spot", side: "sell" }, { venue: "bin", side: "buy" }] },
+    basis: { name: "Basis", legsOf: (dir) => dir > 0
+      ? [{ venue: "spot", side: "buy" }, { venue: "perp", side: "sell" }]
+      : [{ venue: "spot", side: "sell" }, { venue: "perp", side: "buy" }] },
+  };
+  const VENUES = ["bin", "spot", "perp"];
+
+  const newAccount = () => ({ start: START, realizedNet: 0, realizedGross: 0, fees: 0, trades: [], positions: [], curve: [], dayKey: null, dayStart: START, halted: false, seq: 0 });
+
+  const acct = (S) => S.accounts[S.mode];
+  const book = (S, pair, v) => (S.q[pair] || {})[v];
+  function fresh(S, bk, now) {
+    return !!bk && bk.bids.length > 0 && bk.asks.length > 0 && now - bk.recv <= STALE_MS && (S.resyncAt == null || bk.recv > S.resyncAt);
+  }
+
+  // Store a book update. bids/asks: [[price,size]] best first.
+  function setBook(S, pair, venue, bids, asks, now, extra) {
+    if (!bids.length || !asks.length) return;
+    const q = S.q[pair] || (S.q[pair] = {});
+    const prev = q[venue] || {};
+    q[venue] = Object.assign(prev, extra || {}, { bids, asks, bid: bids[0][0], ask: asks[0][0], recv: now });
+    if (venue === "bin" || venue === "perp") {
+      const h = S.hist[pair] || (S.hist[pair] = { bin: [], perp: [] });
+      const arr = h[venue];
+      arr.push({ t: now, v: C.mid(q[venue]) });
+      while (arr.length && arr[0].t < now - 6000) arr.shift();
+    }
+  }
+
+  function metrics(S, pair, now) {
+    const st = S.settings, f = st.feeBps, buf = st.bufferBps;
+    const b = book(S, pair, "bin"), s = book(S, pair, "spot"), p = book(S, pair, "perp");
+    const fr = { bin: fresh(S, b, now), spot: fresh(S, s, now), perp: fresh(S, p, now) };
+    const m = { fresh: fr, lead: null, cross: null, basis: null };
+    if (fr.bin && fr.perp) {
+      const h = S.hist[pair];
+      const gap = h ? C.leadLagGap(h.bin, h.perp, now, st.windowMs) : null;
+      m.lead = { edge: gap == null ? null : Math.abs(gap), dir: gap == null ? 0 : Math.sign(gap), req: C.requiredBps(1, f, C.spreadBps(p), buf) };
+    }
+    if (fr.bin && fr.spot) {
+      const a = C.bps(b.bid, s.ask), z = C.bps(s.bid, b.ask);
+      m.cross = { edge: Math.max(a, z), dir: a >= z ? 1 : -1, req: C.requiredBps(2, f, C.spreadBps(b) + C.spreadBps(s), buf) };
+    }
+    if (fr.spot && fr.perp) {
+      const a = C.bps(p.bid, s.ask), z = C.bps(s.bid, p.ask);
+      m.basis = { edge: Math.max(a, z), dir: a >= z ? 1 : -1, req: C.requiredBps(2, f, C.spreadBps(p) + C.spreadBps(s), buf) };
+    }
+    return m;
+  }
+
+  function exitPx(bk, side) { return side === "buy" ? bk.bid : bk.ask; }
+  function unrealized(S, pos, now) {
+    let gross = 0, exitFees = 0, ok = true;
+    for (const l of pos.legs) {
+      const bk = book(S, pos.pair, l.venue);
+      if (!bk) { ok = false; continue; }
+      const px = exitPx(bk, l.side);
+      gross += C.legPnl(l.side, l.qty, l.entry, px);
+      exitFees += l.qty * px * S.settings.feeBps / 1e4;
+      if (!fresh(S, bk, now)) ok = false;
+    }
+    return { gross, net: gross - pos.feesOpen - exitFees, ok };
+  }
+  function equity(S, a, now) {
+    let net = a.start + a.realizedNet, gross = a.start + a.realizedGross;
+    for (const pos of a.positions) { const u = unrealized(S, pos, now); net += u.net; gross += u.gross; }
+    return { net, gross };
+  }
+  const openNotional = (a) => a.positions.reduce((x, p) => x + p.notional * p.legs.length, 0);
+
+  function divergence(S, pos) {
+    const q = S.q[pos.pair] || {};
+    if (pos.strat === "cross") return pos.dir * C.bps(C.mid(q.bin), C.mid(q.spot));
+    if (pos.strat === "basis") return pos.dir * C.bps(C.mid(q.perp), C.mid(q.spot));
+    return null;
+  }
+
+  function recordSignal(S, rec) { S.signals.unshift(rec); if (S.signals.length > 60) S.signals.length = 60; S.deps.dirty(); }
+
+  function trySignal(S, pair, strat, sig, now) {
+    const key = pair + ":" + strat;
+    const active = !!sig && sig.edge != null && sig.edge > sig.req;
+    const was = S.sigState[key];
+    S.sigState[key] = active;
+    if (!active || was) return; // only act on the rising edge of a signal
+    const a = acct(S), st = S.settings;
+    const rec = { t: now, pair, strat, edge: sig.edge, req: sig.req, dir: sig.dir, result: "" };
+    if (!st.autoTrade) { rec.result = "nur angezeigt (Auto aus)"; return recordSignal(S, rec); }
+    if (a.halted) { rec.result = "Tagesstopp aktiv"; return recordSignal(S, rec); }
+    if (a.positions.some((p) => p.key === key) || S.pending.some((o) => o.key === key)) { rec.result = "schon offen"; return recordSignal(S, rec); }
+    if (a.positions.length + S.pending.filter((o) => o.kind === "open").length >= MAX_POS) { rec.result = "max. 3 Positionen"; return recordSignal(S, rec); }
+    if ((S.cooldown[key] || 0) > now) { rec.result = "Abkühlphase"; return recordSignal(S, rec); }
+    const legs = STRATS[strat].legsOf(sig.dir);
+    const eq = equity(S, a, now).net;
+    const notional = C.sizeNotional({ equity: eq, riskPct: RISK_PCT, stopBps: st.stopBps, feeBps: st.feeBps, legs: legs.length, lev: st.lev, maxPos: MAX_POS, openNotional: openNotional(a) });
+    if (notional < MIN_NOTIONAL) { rec.result = "kein Kapital frei"; return recordSignal(S, rec); }
+    rec.result = "Order, Fill in " + st.latencyMs + " ms";
+    recordSignal(S, rec);
+    const order = { kind: "open", mode: S.mode, key, pair, strat, dir: sig.dir, legs, notional, expBps: sig.edge - sig.req, riskUsd: eq * RISK_PCT / 100, t: now, rec, cancelled: false };
+    S.pending.push(order);
+    S.deps.schedule(() => execOpen(S, order), st.latencyMs);
+  }
+
+  function dropPending(S, order) { const i = S.pending.indexOf(order); if (i >= 0) S.pending.splice(i, 1); }
+
+  function execOpen(S, order) {
+    dropPending(S, order);
+    if (order.cancelled || order.mode !== S.mode) return;
+    const now = S.deps.now(), a = acct(S), fee = S.settings.feeBps;
+    for (const l of order.legs) {
+      if (!fresh(S, book(S, order.pair, l.venue), now)) {
+        order.rec.result = "verworfen: Daten > 2 s alt bei Ausführung";
+        S.cooldown[order.key] = now + COOLDOWN_MS;
+        S.deps.log(order.pair + " " + STRATS[order.strat].name + ": Fill verworfen, Buch zu alt", "warn");
+        return S.deps.dirty();
+      }
+    }
+    const first = book(S, order.pair, order.legs[0].venue);
+    const qty = order.notional / (order.legs[0].side === "buy" ? first.ask : first.bid);
+    let feesOpen = 0;
+    const legs = order.legs.map((l) => {
+      const bk = book(S, order.pair, l.venue);
+      const px = C.vwap(l.side === "buy" ? bk.asks : bk.bids, qty, l.side);
+      feesOpen += qty * px * fee / 1e4;
+      return { venue: l.venue, side: l.side, qty, entry: px };
+    });
+    const pos = { id: ++a.seq, key: order.key, pair: order.pair, strat: order.strat, dir: order.dir, legs, notional: order.notional, feesOpen, openT: now, signalT: order.t, expBps: order.expBps, riskUsd: order.riskUsd, closing: false };
+    a.positions.push(pos);
+    order.rec.result = "gefüllt nach " + (now - order.t) + " ms";
+    S.deps.log(order.pair + " " + STRATS[order.strat].name + " eröffnet: " + legs.map((l) => (l.side === "buy" ? "Kauf " : "Verkauf ") + l.venue + " @ " + l.entry.toPrecision(7)).join(", "), "good");
+    S.deps.dirty();
+  }
+
+  function requestClose(S, pos, reason) {
+    if (pos.closing) return;
+    pos.closing = true;
+    const order = { kind: "close", key: pos.key, pos, reason, t: S.deps.now(), cancelled: false };
+    S.pending.push(order);
+    S.deps.schedule(() => execClose(S, order), S.settings.latencyMs);
+  }
+
+  function execClose(S, order) {
+    dropPending(S, order);
+    const pos = order.pos, a = acct(S);
+    if (order.cancelled || !a.positions.includes(pos)) { pos.closing = false; return; }
+    const now = S.deps.now(), fee = S.settings.feeBps;
+    for (const l of pos.legs) {
+      if (!fresh(S, book(S, pos.pair, l.venue), now)) { pos.closing = false; return; } // retry on a later tick
+    }
+    let gross = 0, feesClose = 0;
+    const legs = pos.legs.map((l) => {
+      const bk = book(S, pos.pair, l.venue), exitSide = l.side === "buy" ? "sell" : "buy";
+      const px = C.vwap(exitSide === "buy" ? bk.asks : bk.bids, l.qty, exitSide);
+      gross += C.legPnl(l.side, l.qty, l.entry, px);
+      feesClose += l.qty * px * fee / 1e4;
+      return Object.assign({}, l, { exit: px });
+    });
+    const fees = pos.feesOpen + feesClose, net = gross - fees;
+    a.realizedGross += gross; a.realizedNet += net; a.fees += fees;
+    a.positions.splice(a.positions.indexOf(pos), 1);
+    a.trades.push({ id: pos.id, pair: pos.pair, strat: pos.strat, dir: pos.dir, openT: pos.openT, closeT: now, holdMs: now - pos.openT,
+      notional: +pos.notional.toFixed(2), gross: +gross.toFixed(4), fees: +fees.toFixed(4), net: +net.toFixed(4),
+      netBps: +(net / pos.notional * 1e4).toFixed(2), reason: order.reason, legs });
+    if (a.trades.length > 2000) a.trades.splice(0, a.trades.length - 2000);
+    S.cooldown[pos.key] = now + COOLDOWN_MS;
+    S.deps.log(pos.pair + " " + STRATS[pos.strat].name + " geschlossen (" + order.reason + "): netto " + net.toFixed(2) + " USDT", net >= 0 ? "good" : "warn");
+    sampleCurve(S, now, true);
+    S.deps.dirty();
+  }
+
+  function sampleCurve(S, now, force) {
+    const a = acct(S), last = a.curve[a.curve.length - 1];
+    if (!force && last && now - last.t < 2000) return;
+    const e = equity(S, a, now);
+    a.curve.push({ t: now, net: +e.net.toFixed(4), gross: +e.gross.toFixed(4) });
+    if (a.curve.length > 1500) a.curve = a.curve.filter((_, i) => i % 2 === 0 || i === a.curve.length - 1);
+  }
+
+  function tick(S, now) {
+    S.metrics = {};
+    for (const pair of S.pairs) S.metrics[pair] = metrics(S, pair, now);
+    if (S.paused) return;
+    const a = acct(S);
+
+    // resync after a pause: wait for fresh books on every selected pair
+    if (S.resyncing && S.pairs.every((p) => VENUES.every((v) => S.metrics[p].fresh[v]))) {
+      S.resyncing = false;
+      S.deps.log("Resync abgeschlossen, Signale wieder aktiv", "good");
+    }
+
+    // daily stop
+    const e = equity(S, a, now), dk = CORE.dayKey(now);
+    if (a.dayKey !== dk) { a.dayKey = dk; a.dayStart = e.net; a.halted = false; }
+    if (!a.halted && e.net <= a.dayStart * (1 - DAILY_STOP_PCT / 100)) {
+      a.halted = true;
+      S.deps.log("Tagesstopp: −2 % erreicht. Keine neuen Trades bis morgen, offene Positionen werden geschlossen.", "err");
+    }
+
+    // exits
+    for (const pos of a.positions.slice()) {
+      if (pos.closing) continue;
+      const u = unrealized(S, pos, now);
+      if (!u.ok) continue;
+      const age = now - pos.openT;
+      let reason = null;
+      if (a.halted) reason = "Tagesstopp";
+      else if (u.net <= -pos.riskUsd) reason = "Stop";
+      else if (pos.strat === "lead") {
+        if (u.gross / pos.notional * 1e4 >= Math.max(pos.expBps, 0) + S.settings.feeBps * 2 && u.net > 0) reason = "Ziel";
+        else if (age >= S.settings.holdLeadMs) reason = "Zeit";
+      } else {
+        if (divergence(S, pos) <= 1) reason = "konvergiert";
+        else if (age >= S.settings.holdArbS * 1000) reason = "Zeit";
+      }
+      if (reason) requestClose(S, pos, reason);
+    }
+
+    // entries (only with fresh data and outside resync)
+    if (!S.resyncing) {
+      for (const pair of S.pairs) {
+        const m = S.metrics[pair];
+        for (const strat of Object.keys(STRATS)) {
+          if (!S.settings.strats[strat]) { S.sigState[pair + ":" + strat] = false; continue; }
+          trySignal(S, pair, strat, m[strat], now);
+        }
+      }
+    }
+    sampleCurve(S, now, false);
+  }
+
+  function pause(S, now) {
+    if (S.paused) return;
+    S.paused = true; S.pausedAt = now;
+    let n = 0;
+    for (const o of S.pending) { o.cancelled = true; if (o.pos) o.pos.closing = false; if (o.rec) o.rec.result = "abgebrochen (Pause)"; n++; }
+    S.pending = [];
+    S.deps.log("Pausiert (App im Hintergrund)" + (n ? ", " + n + " offene Order(s) abgebrochen" : ""), "warn");
+  }
+  function resume(S, now) {
+    if (!S.paused) return;
+    S.paused = false;
+    for (const k of Object.keys(S.hist)) S.hist[k] = { bin: [], perp: [] };
+    S.sigState = {};
+    S.resyncAt = now; S.resyncing = true;
+    S.deps.log("Zurück nach " + Math.round((now - S.pausedAt) / 1000) + " s. In der Pause gab es keine Signale und keine Trades. Warte auf frische Daten …", "warn");
+  }
+
+  return { STRATS, VENUES, STALE_MS, MAX_POS, START, newAccount, setBook, metrics, tick, pause, resume, equity, unrealized, requestClose, fresh };
+})();
+/*ENGINE-END*/
+
+// ======================= App (DOM, feeds, demo) =======================
+(() => {
+  const C = CORE, E = ENGINE;
+  const $ = (s) => document.querySelector(s);
+  const ALL_PAIRS = ["BTC", "ETH", "SOL", "XRP", "DOGE", "ADA", "BNB", "LINK", "AVAX", "LTC", "TRX", "DOT", "SUI", "TON", "BCH"];
+  const VNAME = { bin: "Binance Spot", spot: "Bitget Spot", perp: "Bitget Perp" };
+  const STORE_KEY = "arbscope.v1";
+  const DEFAULTS = { latencyMs: 250, feeBps: 6, bufferBps: 3, stopBps: 20, windowMs: 500, holdLeadMs: 3000, holdArbS: 60, lev: 1, autoTrade: false, strats: { lead: true, cross: true, basis: true } };
+  const framed = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+
+  const S = {
+    settings: JSON.parse(JSON.stringify(DEFAULTS)),
+    pairs: ["BTC", "ETH", "SOL", "XRP"],
+    mode: "live",
+    accounts: { live: E.newAccount(), demo: E.newAccount() },
+    q: {}, hist: {}, metrics: {}, pending: [], cooldown: {}, sigState: {}, signals: [],
+    paused: false, pausedAt: 0, resyncAt: null, resyncing: false,
+    log: [],
+    deps: null,
+  };
+  const UI = { tab: "live", sel: "BTC", dirty: true, chart: {}, liveStart: Date.now(), everData: false, csp: false, wake: null, wakeWanted: false, logLen: -1 };
+
+  // ---------- persistence ----------
+  function load() {
+    let raw = null;
+    try { raw = localStorage.getItem(STORE_KEY); } catch (e) { return; }
+    if (!raw) return;
+    try {
+      const d = JSON.parse(raw);
+      if (d.settings) S.settings = Object.assign({}, DEFAULTS, d.settings, { strats: Object.assign({}, DEFAULTS.strats, d.settings.strats || {}) });
+      if (Array.isArray(d.pairs) && d.pairs.length) S.pairs = d.pairs.filter((p) => ALL_PAIRS.includes(p)).slice(0, 10);
+      for (const m of ["live", "demo"]) {
+        if (d.accounts && d.accounts[m]) {
+          const a = Object.assign(E.newAccount(), d.accounts[m]);
+          a.positions.forEach((p) => { p.closing = false; });
+          S.accounts[m] = a;
+        }
+      }
+      if (Array.isArray(d.log)) S.log = d.log.slice(-300);
+    } catch (e) { /* corrupt store: start clean */ }
+    if (!S.pairs.length) S.pairs = ["BTC", "ETH", "SOL", "XRP"];
+  }
+  let saveTimer = null;
+  function save() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveNow, 1500);
+  }
+  function saveNow() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({ v: 1, settings: S.settings, pairs: S.pairs, accounts: S.accounts, log: S.log.slice(-300) }));
+    } catch (e) { /* storage blocked or full: keep running in memory */ }
+  }
+
+  // ---------- helpers ----------
+  const nf = (d) => new Intl.NumberFormat("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const NF = [0, 1, 2, 3, 4, 5].map(nf);
+  const pd = (p) => p >= 1000 ? 1 : p >= 100 ? 2 : p >= 1 ? 3 : 5;
+  const fp = (p) => p == null ? "–" : NF[pd(p)].format(p);
+  const fu = (v) => (v >= 0 ? "+" : "−") + NF[2].format(Math.abs(v));
+  const fb = (v) => v == null ? "–" : NF[1].format(v);
+  const tm = (t) => new Date(t).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const cls = (v) => v > 0 ? "pos" : v < 0 ? "neg" : "";
+
+  function log(msg, level) {
+    S.log.push({ t: Date.now(), mode: S.mode, msg, level: level || "" });
+    if (S.log.length > 400) S.log.splice(0, S.log.length - 400);
+    UI.dirty = true; save();
+  }
+  function toast(msg) {
+    const el = $("#toast"); el.textContent = msg; el.hidden = false;
+    clearTimeout(toast.t); toast.t = setTimeout(() => { el.hidden = true; }, 2600);
+  }
+
+  S.deps = {
+    now: () => Date.now(),
+    schedule: (fn, ms) => setTimeout(fn, ms),
+    log,
+    dirty: () => { UI.dirty = true; save(); },
+  };
+
+  // ---------- feeds ----------
+  const sym = (p) => p + "USDT";
+  const lv = (arr) => (arr || []).map((x) => [+x[0], +x[1]]).filter((x) => x[0] > 0 && x[1] > 0);
+
+  function makeFeed(o) {
+    const f = { key: o.key, ws: null, urlIdx: 0, attempts: 0, timer: null, ping: null, lastMsg: 0, opened: false, stopped: true, everData: false };
+    function cleanup() {
+      clearInterval(f.ping); f.ping = null;
+      if (f.ws) { f.ws.onopen = f.ws.onmessage = f.ws.onclose = f.ws.onerror = null; try { f.ws.close(); } catch (e) { /* ignore */ } }
+      f.ws = null;
+    }
+    function retry() {
+      cleanup();
+      if (f.stopped) return;
+      if (!f.opened) f.urlIdx = (f.urlIdx + 1) % o.urls().length;
+      f.attempts++;
+      const delay = Math.min(30000, 1000 * 2 ** Math.min(f.attempts, 5)) * (0.75 + Math.random() * 0.5);
+      f.nextAt = Date.now() + delay;
+      clearTimeout(f.timer); f.timer = setTimeout(connect, delay);
+      UI.dirty = true;
+    }
+    function connect() {
+      cleanup();
+      if (f.stopped) return;
+      f.opened = false;
+      const url = o.urls()[f.urlIdx];
+      let ws;
+      try { ws = new WebSocket(url); } catch (e) { return retry(); }
+      f.ws = ws;
+      ws.onopen = () => {
+        f.opened = true; f.lastMsg = Date.now();
+        if (o.onOpen) o.onOpen(ws);
+        if (o.pingMs) f.ping = setInterval(() => { try { ws.send("ping"); } catch (e) { /* ignore */ } }, o.pingMs);
+        UI.dirty = true;
+      };
+      ws.onmessage = (ev) => {
+        f.lastMsg = Date.now();
+        if (ev.data === "pong") return;
+        let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+        if (o.onMsg(m)) { f.everData = true; UI.everData = true; f.attempts = 0; }
+      };
+      ws.onerror = () => { /* onclose follows */ };
+      ws.onclose = () => retry();
+    }
+    f.start = () => { f.stopped = false; f.attempts = 0; connect(); };
+    f.stop = () => { f.stopped = true; clearTimeout(f.timer); cleanup(); };
+    f.restart = () => { f.stop(); f.start(); };
+    f.watch = (now) => {
+      if (!f.stopped && f.ws && f.ws.readyState === 1 && now - f.lastMsg > o.silentMs) { log(o.label + ": keine Daten seit " + Math.round(o.silentMs / 1000) + " s, verbinde neu", "warn"); retry(); }
+    };
+    f.open = () => !!f.ws && f.ws.readyState === 1;
+    return f;
+  }
+
+  // Binance Spot market streams. Docs: https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams
+  // Combined: wss://stream.binance.com:9443/stream?streams=btcusdt@bookTicker/...  Fallback (market data only): wss://data-stream.binance.vision
+  // Heartbeat: server sends a ping frame every 20 s, the browser answers with pong automatically. Connections end after 24 h, then we reconnect.
+  const binance = makeFeed({
+    key: "bin", label: "Binance", silentMs: 30000,
+    urls: () => {
+      const streams = S.pairs.map((p) => sym(p).toLowerCase() + "@bookTicker").join("/");
+      return ["wss://stream.binance.com:9443/stream?streams=" + streams, "wss://data-stream.binance.vision/stream?streams=" + streams];
+    },
+    onMsg: (m) => {
+      const d = m && m.data;
+      if (!d || !d.s || d.b == null) return false;
+      const pair = d.s.replace(/USDT$/, "");
+      if (!S.pairs.includes(pair) || S.mode !== "live") return false;
+      E.setBook(S, pair, "bin", lv([[d.b, d.B]]), lv([[d.a, d.A]]), Date.now());
+      return true;
+    },
+  });
+
+  // Bitget v2 public WebSocket. Docs: https://www.bitget.com/docs/classic/websocket/intro
+  // URL: wss://ws.bitget.com/v2/ws/public. Heartbeat: send "ping" every 30 s, server answers "pong"; no ping for 2 min = disconnect.
+  // Channels: books5 (snapshot each push, ~150 ms) https://www.bitget.com/docs/classic/websocket/contract/public/Order-Book-Channel and ticker.
+  // instType SPOT for spot, USDT-FUTURES for USDT perps. Under 50 channels per connection (4 per pair x max 10 pairs = 40).
+  const bitget = makeFeed({
+    key: "bitget", label: "Bitget", silentMs: 40000, pingMs: 25000,
+    urls: () => ["wss://ws.bitget.com/v2/ws/public"],
+    onOpen: (ws) => {
+      const args = [];
+      for (const p of S.pairs) for (const instType of ["SPOT", "USDT-FUTURES"]) for (const channel of ["books5", "ticker"]) args.push({ instType, channel, instId: sym(p) });
+      for (let i = 0; i < args.length; i += 10) ws.send(JSON.stringify({ op: "subscribe", args: args.slice(i, i + 10) }));
+    },
+    onMsg: (m) => {
+      if (m.event === "error") { log("Bitget: " + (m.msg || "Fehler") + " (" + (m.code || "") + ")", "err"); return false; }
+      if (!m.arg || !Array.isArray(m.data) || !m.data.length || S.mode !== "live") return false;
+      const pair = String(m.arg.instId || "").replace(/USDT$/, "");
+      if (!S.pairs.includes(pair)) return false;
+      const venue = m.arg.instType === "SPOT" ? "spot" : "perp";
+      const d = m.data[0];
+      if (m.arg.channel === "books5") { E.setBook(S, pair, venue, lv(d.bids), lv(d.asks), Date.now()); return true; }
+      if (m.arg.channel === "ticker") {
+        const q = S.q[pair] || (S.q[pair] = {});
+        const meta = q[venue + "Meta"] || (q[venue + "Meta"] = {});
+        if (d.fundingRate != null) meta.funding = +d.fundingRate;
+        if (d.lastPr != null) meta.last = +d.lastPr;
+        return true;
+      }
+      return false;
+    },
+  });
+
+  document.addEventListener("securitypolicyviolation", (e) => {
+    if (/^wss?:/i.test(e.blockedURI || "") || /bitget|binance/i.test(e.blockedURI || "")) UI.csp = true;
+  });
+
+  // ---------- demo (simulated, clearly labelled) ----------
+  const DEMO_BASE = { BTC: 78000, ETH: 3600, SOL: 180, XRP: 2.4, DOGE: 0.2, ADA: 0.7, BNB: 650, LINK: 18, AVAX: 30, LTC: 95, TRX: 0.3, DOT: 5, SUI: 3.5, TON: 3, BCH: 450 };
+  const demo = { timer: null, st: {} };
+  function gauss() { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+  function demoBook(midPx, halfBps) {
+    const bids = [], asks = [];
+    for (let i = 0; i < 5; i++) {
+      const off = (halfBps + i * 1.2) / 1e4, sz = (20000 + Math.random() * 180000) / midPx;
+      bids.push([midPx * (1 - off), sz]); asks.push([midPx * (1 + off), sz]);
+    }
+    return { bids, asks };
+  }
+  function demoTick() {
+    const now = Date.now();
+    for (const p of S.pairs) {
+      const d = demo.st[p] || (demo.st[p] = { m: DEMO_BASE[p] || 10, hist: [], basis: 3, lag: 350 + Math.random() * 150 });
+      d.m *= Math.exp(gauss() * 1.4 / 1e4 + (Math.random() < 0.004 ? (Math.random() < 0.5 ? -1 : 1) * (15 + Math.random() * 25) / 1e4 : 0));
+      d.hist.push({ t: now, v: d.m });
+      while (d.hist.length && d.hist[0].t < now - 3000) d.hist.shift();
+      const lagged = C.valueAt(d.hist, now - d.lag) || d.hist[0];
+      d.basis += (3 - d.basis) * 0.05 + gauss() * 0.4 + (Math.random() < 0.002 ? 18 : 0);
+      const spotMid = lagged.v * (1 + gauss() * 0.4 / 1e4);
+      const perpMid = spotMid * (1 + d.basis / 1e4);
+      const b = demoBook(d.m, 0.3), s = demoBook(spotMid, 0.6), q = demoBook(perpMid, 0.4);
+      E.setBook(S, p, "bin", [b.bids[0]], [b.asks[0]], now);
+      E.setBook(S, p, "spot", s.bids, s.asks, now);
+      E.setBook(S, p, "perp", q.bids, q.asks, now);
+      const qq = S.q[p]; qq.perpMeta = { funding: 0.0001 };
+    }
+  }
+  function cancelPending() { for (const o of S.pending) { o.cancelled = true; if (o.pos) o.pos.closing = false; } S.pending = []; }
+  function startDemo() {
+    stopFeeds(); cancelPending();
+    S.mode = "demo"; S.q = {}; S.hist = {}; S.sigState = {}; S.signals = []; S.resyncAt = null; S.resyncing = false;
+    demo.st = {};
+    demo.timer = setInterval(() => { if (!S.paused) demoTick(); }, 100);
+    log("DEMO-Modus gestartet: simulierte Kurse, eigenes Paper-Konto", "warn");
+    UI.dirty = true; save();
+  }
+  function stopDemo() { clearInterval(demo.timer); demo.timer = null; }
+  function startLive() {
+    stopDemo(); cancelPending();
+    S.mode = "live"; S.q = {}; S.hist = {}; S.sigState = {}; S.signals = []; S.resyncAt = null; S.resyncing = false;
+    UI.liveStart = Date.now(); UI.everData = false; binance.everData = bitget.everData = false;
+    binance.start(); bitget.start();
+    log("Verbinde mit Binance und Bitget (öffentliche WebSockets)", "");
+    UI.dirty = true;
+  }
+  function stopFeeds() { binance.stop(); bitget.stop(); }
+
+  // ---------- status ----------
+  function venueStatus(v, now) {
+    if (S.paused) return "PAUSE";
+    if (S.mode === "demo") return "DEMO";
+    const feed = v === "bin" ? binance : bitget;
+    if (!feed.open()) return "OFFLINE";
+    return S.pairs.every((p) => E.fresh(S, (S.q[p] || {})[v], now)) ? "LIVE" : "STALE";
+  }
+  function overallStatus(now) {
+    if (S.paused) return "PAUSE";
+    if (S.mode === "demo") return "DEMO";
+    const st = E.VENUES.map((v) => venueStatus(v, now));
+    if (st.every((x) => x === "LIVE")) return "LIVE";
+    if (st.every((x) => x === "OFFLINE")) return "OFFLINE";
+    return "STALE";
+  }
+  function liveProblem(now) {
+    if (S.mode !== "live") return null;
+    if (UI.csp) return "csp";
+    if (!UI.everData && now - UI.liveStart > 10000) return "unreachable";
+    if (UI.everData && !binance.open() && !bitget.open()) return "lost";
+    return null;
+  }
+
+  // ---------- rendering ----------
+  function renderHeader(now) {
+    const ov = overallStatus(now);
+    const o = $("#overall"); o.className = "chip overall s-" + ov;
+    $("#overallTxt").textContent = ov === "PAUSE" ? "PAUSE" : ov;
+    $("#demoBadge").hidden = S.mode !== "demo";
+    $("#feedChips").innerHTML = E.VENUES.map((v) => {
+      const s = venueStatus(v, now);
+      return '<span class="chip s-' + s + '"><span class="dot"></span>' + VNAME[v] + " " + s + "</span>";
+    }).join("");
+  }
+
+  let lastBanner = "";
+  function renderBanners(now) {
+    let html = "";
+    const pr = liveProblem(now);
+    if (S.mode === "demo") {
+      html = '<div class="banner demo"><h2>DEMO-Modus: simulierte Kurse</h2><p>Nichts hier stammt von einer Börse. Im Simulator ist ein Vorsprung von Binance absichtlich eingebaut, Gewinne im Demo beweisen deshalb nichts. Das Demo hat ein eigenes Paper-Konto.</p><div class="row"><button class="btn cyan" data-act="live">Live-Daten erneut versuchen</button></div></div>';
+    } else if (pr) {
+      const why = pr === "csp"
+        ? "Diese Vorschau läuft in einer Sandbox, die Verbindungen zu fremden Servern blockiert. Hier kommen keine Live-Daten an, egal wie oft neu verbunden wird."
+        : pr === "unreachable"
+          ? "Seit über 10 Sekunden kam keine Nachricht von Binance oder Bitget. Mögliche Gründe: Sandbox, Firewall, VPN oder eine Region, in der die Börse den Zugriff sperrt. Die App versucht es weiter, mit wachsendem Abstand."
+          : "Beide Verbindungen sind getrennt. Die App verbindet automatisch neu.";
+      html = '<div class="banner"><h2>Kein Live-Feed erreichbar</h2><p>' + why + '</p><p>Ohne frische Daten (älter als 2 s) gibt es keine Signale und keine Fills.</p><div class="row"><button class="btn magenta" data-act="demo">DEMO-Modus starten</button><button class="btn" data-act="retry">Jetzt neu verbinden</button></div></div>';
+    }
+    if (S.paused) html += '<div class="banner"><h2>Pausiert</h2><p>Die App war im Hintergrund. Keine Signale, keine Trades.</p></div>';
+    else if (S.resyncing) html += '<div class="banner"><h2>Resync läuft</h2><p>Warte auf frische Orderbücher für alle Paare. Bis dahin keine neuen Signale.</p></div>';
+    if (html !== lastBanner) { $("#banners").innerHTML = html; lastBanner = html; }
+  }
+
+  function renderLive(now) {
+    const html = S.pairs.map((p) => {
+      const q = S.q[p] || {}, m = S.metrics[p] || { fresh: {} };
+      const row = (v) => {
+        const bk = q[v];
+        const fr = m.fresh[v];
+        return '<span class="' + v + '">' + VNAME[v] + (fr ? "" : ' <span class="warn">alt</span>') + '</span><span class="v">' + fp(bk && bk.bid) + '</span><span class="v">' + fp(bk && bk.ask) + "</span>";
+      };
+      const ok = m.fresh.bin && m.fresh.spot && m.fresh.perp;
+      const lead = m.lead && m.lead.edge != null ? m.lead.dir * m.lead.edge : null;
+      const cross = m.cross ? m.cross.edge : null, basis = q.perp && q.spot ? C.bps(C.mid(q.perp), C.mid(q.spot)) : null;
+      const fund = q.perpMeta && q.perpMeta.funding != null ? NF[4].format(q.perpMeta.funding * 100) + " %" : "–";
+      return '<button class="pcard' + (UI.sel === p ? " sel" : "") + '" data-pair="' + p + '"><div class="hd"><span class="dot" style="background:var(--' + (ok ? "green" : S.mode === "demo" ? "magenta" : "amber") + ')"></span><span class="sym">' + p + '/USDT</span><span class="muted small" style="margin-left:auto">Funding ' + fund + '</span></div>' +
+        '<div class="qt"><span class="muted">Markt</span><span class="v muted">Bid</span><span class="v muted">Ask</span>' + row("bin") + row("spot") + row("perp") + "</div>" +
+        '<div class="metrics"><div class="metric"><span>Lead-Lag</span><strong class="' + cls(lead) + '">' + fb(lead) + ' bps</strong></div><div class="metric"><span>Spread Börsen</span><strong class="' + cls(cross) + '">' + fb(cross) + ' bps</strong></div><div class="metric"><span>Perp-Basis</span><strong>' + fb(basis) + " bps</strong></div></div></button>";
+    }).join("");
+    $("#pairCards").innerHTML = html;
+    $("#chartTitle").textContent = UI.sel + "/USDT: Mid-Kurse, letzte 60 s";
+    drawLiveChart(now);
+  }
+
+  function canvasCtx(cv) {
+    const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    const w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
+    if (cv.width !== w * dpr || cv.height !== h * dpr) { cv.width = w * dpr; cv.height = h * dpr; }
+    const ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+    return { ctx, w, h };
+  }
+  const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+  function drawSeries(cv, series, opts) {
+    const { ctx, w, h } = canvasCtx(cv);
+    const padL = 6, padR = 58, padT = 8, padB = 18, W = w - padL - padR, H = h - padT - padB;
+    ctx.font = "11px " + css("--font-data"); ctx.textBaseline = "middle";
+    const pts = series.flatMap((s) => s.data);
+    if (pts.length < 2) { ctx.fillStyle = css("--muted"); ctx.fillText(opts.empty, padL, h / 2); return; }
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (const p of pts) { x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x); y0 = Math.min(y0, p.y); y1 = Math.max(y1, p.y); }
+    if (opts.xMin != null) x0 = opts.xMin;
+    if (y1 - y0 < (opts.minRange || 1e-9)) { const c = (y0 + y1) / 2, r = (opts.minRange || 1) / 2; y0 = c - r; y1 = c + r; }
+    const pad = (y1 - y0) * 0.08; y0 -= pad; y1 += pad;
+    const X = (x) => padL + (x - x0) / Math.max(1, x1 - x0) * W, Y = (y) => padT + (y1 - y) / (y1 - y0) * H;
+    ctx.strokeStyle = css("--line"); ctx.fillStyle = css("--muted"); ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const v = y0 + (y1 - y0) * i / 4, yy = Math.round(Y(v)) + 0.5;
+      ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(padL + W, yy); ctx.stroke();
+      ctx.fillText(opts.fmt(v), padL + W + 6, yy);
+    }
+    if (opts.zero != null && opts.zero > y0 && opts.zero < y1) {
+      ctx.setLineDash([3, 3]); ctx.strokeStyle = css("--muted"); ctx.beginPath(); ctx.moveTo(padL, Y(opts.zero)); ctx.lineTo(padL + W, Y(opts.zero)); ctx.stroke(); ctx.setLineDash([]);
+    }
+    ctx.textBaseline = "alphabetic"; ctx.fillStyle = css("--muted");
+    ctx.fillText(opts.xLabel(x0), padL, h - 4);
+    ctx.textAlign = "right"; ctx.fillText(opts.xLabel(x1), padL + W, h - 4); ctx.textAlign = "left";
+    for (const s of series) {
+      if (s.data.length < 2) continue;
+      ctx.strokeStyle = css(s.color); ctx.lineWidth = 2; ctx.beginPath();
+      s.data.forEach((p, i) => { if (i) ctx.lineTo(X(p.x), Y(p.y)); else ctx.moveTo(X(p.x), Y(p.y)); });
+      ctx.stroke();
+      const lp = s.data[s.data.length - 1];
+      ctx.fillStyle = css(s.color); ctx.beginPath(); ctx.arc(X(lp.x), Y(lp.y), 3, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  function sampleChart(now) {
+    for (const p of S.pairs) {
+      const q = S.q[p]; if (!q || !q.bin) continue;
+      const arr = UI.chart[p] || (UI.chart[p] = []);
+      if (arr.length && now - arr[arr.length - 1].t < 250) continue;
+      const fr = S.metrics[p] ? S.metrics[p].fresh : {};
+      arr.push({ t: now, bin: fr.bin ? C.mid(q.bin) : null, spot: fr.spot && q.spot ? C.mid(q.spot) : null, perp: fr.perp && q.perp ? C.mid(q.perp) : null });
+      while (arr.length && arr[0].t < now - 60000) arr.shift();
+    }
+  }
+  function drawLiveChart(now) {
+    const arr = (UI.chart[UI.sel] || []).filter((r) => r.bin != null);
+    const ref = arr.length ? arr[arr.length - 1].bin : 1;
+    const mk = (k) => arr.filter((r) => r[k] != null).map((r) => ({ x: r.t, y: C.bps(r[k], ref) }));
+    drawSeries($("#liveChart"), [{ data: mk("bin"), color: "--cyan" }, { data: mk("spot"), color: "--magenta" }, { data: mk("perp"), color: "--green" }], {
+      empty: "Warte auf frische Daten …", minRange: 4, zero: 0, xMin: now - 60000,
+      fmt: (v) => (v > 0 ? "+" : "") + NF[1].format(v), xLabel: (x) => "−" + Math.max(0, Math.round((now - x) / 1000)) + " s",
+    });
+  }
+
+  function renderScan(now) {
+    const names = { lead: "Lead-Lag", cross: "Spread", basis: "Basis" };
+    $("#scanList").innerHTML = S.pairs.map((p) => {
+      const m = S.metrics[p] || {};
+      const rows = Object.keys(names).map((k) => {
+        const sg = m[k];
+        let tag, w = 0, txt = "–";
+        if (!S.settings.strats[k]) tag = '<span class="tag off">AUS</span>';
+        else if (S.paused) tag = '<span class="tag off">PAUSE</span>';
+        else if (!sg || sg.edge == null) tag = '<span class="tag stale">' + (sg ? "WARTET" : "STALE") + "</span>";
+        else {
+          w = Math.max(0, Math.min(1.5, sg.edge / sg.req)) / 1.5 * 100;
+          txt = fb(sg.edge) + " / " + fb(sg.req);
+          tag = sg.edge > sg.req && !S.resyncing ? '<span class="tag sig">SIGNAL</span>' : '<span class="tag off">' + txt + "</span>";
+        }
+        return '<div class="strat"><span>' + names[k] + '</span><div class="bar' + (w > 66.6 ? " hot" : "") + '"><b style="width:' + w.toFixed(1) + '%"></b></div>' + tag + "</div>";
+      }).join("");
+      return '<div class="srow"><span class="sym">' + p + "</span>" + rows + "</div>";
+    }).join("") + '<p class="small muted" style="margin:6px 0 0">Werte in bps: Vorteil / Schwelle. Spread setzt Bestand auf beiden Börsen voraus, Lead-Lag handelt den Bitget-Perp.</p>';
+    const sigs = S.signals.slice(0, 30);
+    $("#sigTable").innerHTML = sigs.length
+      ? "<table><thead><tr><th>Zeit</th><th>Paar</th><th>Strategie</th><th class=\"r\">Vorteil</th><th class=\"r\">Schwelle</th><th>Ergebnis</th></tr></thead><tbody>" +
+        sigs.map((s) => "<tr><td>" + tm(s.t) + "</td><td>" + s.pair + "</td><td>" + E.STRATS[s.strat].name + (s.dir > 0 ? " ↑" : " ↓") + '</td><td class="r">' + fb(s.edge) + '</td><td class="r">' + fb(s.req) + "</td><td>" + s.result + "</td></tr>").join("") + "</tbody></table>"
+      : '<p class="empty">Noch kein Signal. Signale entstehen nur, wenn der Vorteil alle Kosten plus Puffer übersteigt. Das ist selten.</p>';
+  }
+
+  function renderPaper(now) {
+    const a = S.accounts[S.mode], e = E.equity(S, a, now);
+    const day = e.net - a.dayStart;
+    $("#autoBtn").textContent = "Auto-Trading: " + (S.settings.autoTrade ? "an" : "aus");
+    $("#autoBtn").className = "btn " + (S.settings.autoTrade ? "green" : "cyan");
+    $("#kpis").innerHTML =
+      '<div class="kpi"><span>Equity netto</span><strong class="' + cls(e.net - a.start) + '">' + NF[2].format(e.net) + '</strong></div>' +
+      '<div class="kpi"><span>Equity brutto</span><strong>' + NF[2].format(e.gross) + '</strong></div>' +
+      '<div class="kpi"><span>Heute netto</span><strong class="' + cls(day) + '">' + fu(day) + '</strong></div>' +
+      '<div class="kpi"><span>Bezahlte Fees</span><strong>' + NF[2].format(a.fees) + "</strong></div>";
+    $("#haltNote").innerHTML = (a.halted ? '<span class="neg">Tagesstopp aktiv: keine neuen Trades bis morgen.</span> ' : "") + "Konto: " + (S.mode === "demo" ? "DEMO (simuliert)" : "Live-Daten") + ", Start 1.000 USDT, Hebel " + S.settings.lev + "x.";
+    const pts = (k) => a.curve.map((c) => ({ x: c.t, y: c[k] }));
+    drawSeries($("#eqChart"), [{ data: pts("gross"), color: "--cyan" }, { data: pts("net"), color: "--green" }], {
+      empty: "Kurve startet, sobald Daten fließen", minRange: 1, zero: a.start,
+      fmt: (v) => NF[1].format(v), xLabel: (x) => tm(x).slice(0, 5),
+    });
+    const net = a.trades.map((t) => t.net), st = C.tradeStats(net);
+    const wins = a.trades.filter((t) => t.net > 0).length;
+    const v = st.verdict === "few" ? '<p class="verdict muted">Zu wenige Trades für eine Aussage</p>'
+      : st.verdict === "none" ? '<p class="verdict warn">Kein nachweisbarer Edge</p>'
+        : st.verdict === "pos" ? '<p class="verdict pos">Positiver Edge (95 %-KI über 0)</p>' : '<p class="verdict neg">Nachweisbar negativ</p>';
+    $("#stats").innerHTML = v +
+      '<div class="kpis"><div class="kpi"><span>Trades</span><strong>' + st.n + '</strong></div><div class="kpi"><span>Netto je Trade</span><strong class="' + cls(st.mean || 0) + '">' + (st.mean == null ? "–" : fu(st.mean)) + '</strong></div><div class="kpi"><span>95 %-KI</span><strong style="font-size:14px">' + (st.lo == null ? "–" : fu(st.lo) + " … " + fu(st.hi)) + '</strong></div><div class="kpi"><span>Gewinner</span><strong>' + (st.n ? NF[0].format(wins / st.n * 100) + " %" : "–") + "</strong></div></div>" +
+      '<p class="small muted" style="margin:8px 0 0">Alle Beträge in USDT, nach Fees. Das Intervall wird mit wachsender Zahl an Trades enger. Erst wenn es komplett über 0 liegt, gibt es Hinweise auf einen echten Vorteil.</p>';
+    $("#positions").innerHTML = a.positions.length ? a.positions.map((p) => {
+      const u = E.unrealized(S, p, now);
+      return '<div class="poscard"><div><strong>' + p.pair + " " + E.STRATS[p.strat].name + (p.dir > 0 ? " ↑" : " ↓") + '</strong><div class="small muted">' + p.legs.map((l) => (l.side === "buy" ? "Long " : "Short ") + VNAME[l.venue] + " @ " + fp(l.entry)).join(" · ") + '</div><div class="small">' + NF[0].format(p.notional) + " USDT je Leg · seit " + Math.round((now - p.openT) / 1000) + ' s · netto <span class="' + cls(u.net) + '">' + fu(u.net) + "</span>" + (u.ok ? "" : ' <span class="warn">(Daten alt)</span>') + "</div></div>" +
+        '<button class="btn red" data-close="' + p.id + '"' + (p.closing ? " disabled" : "") + ">" + (p.closing ? "Schließt …" : "Schließen") + "</button></div>";
+    }).join("") : '<p class="empty">Keine offenen Positionen.</p>';
+    const tr = a.trades.slice(-50).reverse();
+    $("#trades").innerHTML = tr.length
+      ? "<table><thead><tr><th>Ende</th><th>Paar</th><th>Strategie</th><th class=\"r\">Brutto</th><th class=\"r\">Fees</th><th class=\"r\">Netto</th><th class=\"r\">bps</th><th>Grund</th></tr></thead><tbody>" +
+        tr.map((t) => "<tr><td>" + tm(t.closeT) + "</td><td>" + t.pair + "</td><td>" + E.STRATS[t.strat].name + '</td><td class="r ' + cls(t.gross) + '">' + fu(t.gross) + '</td><td class="r">' + NF[3].format(t.fees) + '</td><td class="r ' + cls(t.net) + '">' + fu(t.net) + '</td><td class="r">' + NF[1].format(t.netBps) + "</td><td>" + t.reason + "</td></tr>").join("") + "</tbody></table>"
+      : '<p class="empty">Noch keine Trades. Schalte Auto-Trading ein und warte auf ein Signal.</p>';
+  }
+
+  function renderLog() {
+    if (S.log.length === UI.logLen) return;
+    UI.logLen = S.log.length;
+    $("#logList").innerHTML = S.log.slice(-200).reverse().map((l) => '<div class="' + (l.level || "") + '"><span class="t">' + tm(l.t) + (l.mode === "demo" ? " DEMO" : "") + "</span>" + l.msg.replace(/</g, "&lt;") + "</div>").join("") || '<div class="muted">Leer.</div>';
+  }
+
+  function renderSettings() {
+    const s = S.settings;
+    $("#sLatency").value = s.latencyMs; $("#sFee").value = s.feeBps; $("#sBuffer").value = s.bufferBps; $("#sStop").value = s.stopBps;
+    $("#sWindow").value = s.windowMs; $("#sHoldLead").value = s.holdLeadMs; $("#sHoldArb").value = s.holdArbS;
+    document.querySelectorAll("#levSeg .btn").forEach((b) => b.classList.toggle("on", +b.dataset.lev === s.lev));
+    const sn = { lead: "Lead-Lag Binance → Bitget-Perp", cross: "Spread zwischen Börsen (Bid/Ask)", basis: "Perp-Basis (Perp gegen Spot)" };
+    $("#stratToggles").innerHTML = Object.keys(sn).map((k) => '<button class="toggle' + (s.strats[k] ? " on" : "") + '" data-strat="' + k + '">' + (s.strats[k] ? "✓ " : "○ ") + sn[k] + "</button>").join("");
+    $("#pairPicker").innerHTML = ALL_PAIRS.map((p) => '<button class="pairchip' + (S.pairs.includes(p) ? " on" : "") + '" data-pick="' + p + '">' + p + "</button>").join("");
+    $("#pairNote").textContent = S.pairs.length + " von 10 gewählt.";
+    $("#wakeBtn").textContent = "Bildschirm wach halten: " + (UI.wake ? "an" : "aus");
+  }
+
+  function render() {
+    const now = Date.now();
+    renderHeader(now); renderBanners(now);
+    if (UI.tab === "live") renderLive(now);
+    else if (UI.tab === "scan") renderScan(now);
+    else if (UI.tab === "paper") renderPaper(now);
+    else renderLog();
+    UI.dirty = false;
+  }
+
+  // ---------- loops ----------
+  setInterval(() => {
+    const now = Date.now();
+    E.tick(S, now);
+    if (!S.paused) sampleChart(now);
+    if (S.mode === "live") { binance.watch(now); bitget.watch(now); }
+  }, 100);
+  setInterval(() => { if (!document.hidden) render(); }, 250); // UI updates max. 4 per second
+
+  // ---------- background / foreground ----------
+  function onHidden() { E.pause(S, Date.now()); saveNow(); }
+  function onVisible() {
+    E.resume(S, Date.now());
+    if (S.mode === "live") { for (const f of [binance, bitget]) if (!f.open()) f.restart(); }
+    if (UI.wakeWanted) requestWake();
+    render();
+  }
+  document.addEventListener("visibilitychange", () => (document.hidden ? onHidden() : onVisible()));
+  window.addEventListener("pagehide", saveNow);
+
+  // ---------- wake lock ----------
+  async function requestWake() {
+    try {
+      if (!("wakeLock" in navigator)) { toast("Wake-Lock wird von diesem Browser nicht unterstützt"); UI.wakeWanted = false; return renderSettings(); }
+      UI.wake = await navigator.wakeLock.request("screen");
+      UI.wake.addEventListener("release", () => { UI.wake = null; renderSettings(); });
+    } catch (e) { UI.wake = null; toast("Wake-Lock abgelehnt (z. B. Energiesparmodus)"); }
+    renderSettings();
+  }
+
+  // ---------- export ----------
+  let exportName = "";
+  function showExport(text, name) {
+    exportName = name;
+    $("#exportBox").hidden = false; $("#exportText").value = text;
+    $("#saveBtn").hidden = framed;
+  }
+  $("#expCsv").addEventListener("click", () => {
+    const rows = S.accounts[S.mode].trades.map((t) => ({ mode: S.mode, id: t.id, pair: t.pair, strategie: E.STRATS[t.strat].name, richtung: t.dir > 0 ? "up" : "down",
+      eroeffnet: new Date(t.openT).toISOString(), geschlossen: new Date(t.closeT).toISOString(), halte_ms: t.holdMs, notional_je_leg: t.notional,
+      brutto: t.gross, fees: t.fees, netto: t.net, netto_bps: t.netBps, grund: t.reason,
+      legs: t.legs.map((l) => l.venue + ":" + l.side + ":" + l.qty.toPrecision(6) + "@" + l.entry.toPrecision(8) + "->" + l.exit.toPrecision(8)).join(" ") }));
+    showExport(C.toCsv(rows, ["mode", "id", "pair", "strategie", "richtung", "eroeffnet", "geschlossen", "halte_ms", "notional_je_leg", "brutto", "fees", "netto", "netto_bps", "grund", "legs"]), "arbscope-trades-" + S.mode + ".csv");
+  });
+  $("#expJson").addEventListener("click", () => {
+    showExport(JSON.stringify({ exportiert: new Date().toISOString(), settings: S.settings, pairs: S.pairs, accounts: S.accounts, log: S.log }, null, 1), "arbscope-export.json");
+  });
+  $("#copyBtn").addEventListener("click", () => {
+    const ta = $("#exportText"), txt = ta.value;
+    const fallback = () => { ta.focus(); ta.select(); toast("Text markiert. Jetzt über das Menü kopieren."); };
+    try { navigator.clipboard.writeText(txt).then(() => toast("Kopiert"), fallback); } catch (e) { fallback(); }
+  });
+  $("#saveBtn").addEventListener("click", () => {
+    const blob = new Blob([$("#exportText").value], { type: "text/plain" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = exportName;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  });
+
+  // ---------- reset ----------
+  $("#resetBtn").addEventListener("click", () => {
+    $("#cfText").textContent = "Löscht Trades, offene Positionen, Equity-Kurve und Log im " + (S.mode === "demo" ? "DEMO-Konto" : "Live-Konto") + ". Das Konto startet wieder mit 1.000 USDT.";
+    $("#confirmModal").hidden = false; $("#cfNo").focus();
+  });
+  $("#cfNo").addEventListener("click", () => { $("#confirmModal").hidden = true; });
+  $("#cfYes").addEventListener("click", () => {
+    $("#confirmModal").hidden = true;
+    for (const o of S.pending) o.cancelled = true;
+    S.pending = []; S.cooldown = {}; S.signals = []; S.sigState = {};
+    S.accounts[S.mode] = E.newAccount();
+    S.log = S.log.filter((l) => l.mode !== S.mode);
+    log("Konto zurückgesetzt auf 1.000 USDT", "warn");
+    saveNow(); toast("Zurückgesetzt"); render();
+  });
+
+  // ---------- inputs ----------
+  const numFields = { sLatency: ["latencyMs", 0, 3000], sFee: ["feeBps", 0, 50], sBuffer: ["bufferBps", 0, 50], sStop: ["stopBps", 5, 200], sWindow: ["windowMs", 200, 3000], sHoldLead: ["holdLeadMs", 500, 30000], sHoldArb: ["holdArbS", 5, 3600] };
+  for (const [id, [key, lo, hi]] of Object.entries(numFields)) {
+    $("#" + id).addEventListener("change", (e) => {
+      const v = parseFloat(String(e.target.value).replace(",", "."));
+      S.settings[key] = Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : DEFAULTS[key];
+      e.target.value = S.settings[key];
+      log("Einstellung geändert: " + key + " = " + S.settings[key]);
+    });
+  }
+  $("#levSeg").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-lev]"); if (!b) return;
+    S.settings.lev = +b.dataset.lev; log("Hebel " + S.settings.lev + "x"); renderSettings();
+  });
+  $("#stratToggles").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-strat]"); if (!b) return;
+    const k = b.dataset.strat; S.settings.strats[k] = !S.settings.strats[k];
+    log(E.STRATS[k].name + (S.settings.strats[k] ? " aktiviert" : " deaktiviert")); renderSettings();
+  });
+  $("#pairPicker").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-pick]"); if (!b) return;
+    const p = b.dataset.pick;
+    if (S.pairs.includes(p)) {
+      if (S.pairs.length === 1) return toast("Mindestens ein Paar");
+      if (Object.values(S.accounts).some((a) => a.positions.some((x) => x.pair === p))) return toast(p + " hat eine offene Position");
+      S.pairs = S.pairs.filter((x) => x !== p);
+    } else {
+      if (S.pairs.length >= 10) return toast("Maximal 10 Paare");
+      S.pairs = S.pairs.concat(p);
+    }
+    if (!S.pairs.includes(UI.sel)) UI.sel = S.pairs[0];
+    log("Paare: " + S.pairs.join(", "));
+    renderSettings();
+    clearTimeout(UI.pairTimer);
+    UI.pairTimer = setTimeout(() => { if (S.mode === "live") { binance.restart(); bitget.restart(); } }, 800);
+  });
+  $("#wakeBtn").addEventListener("click", async () => {
+    if (UI.wake) { UI.wakeWanted = false; try { await UI.wake.release(); } catch (e) { /* ignore */ } UI.wake = null; renderSettings(); }
+    else { UI.wakeWanted = true; requestWake(); }
+  });
+  $("#autoBtn").addEventListener("click", () => {
+    S.settings.autoTrade = !S.settings.autoTrade;
+    log("Auto-Trading " + (S.settings.autoTrade ? "an" : "aus"), S.settings.autoTrade ? "good" : "");
+    render();
+  });
+  $("#positions").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-close]"); if (!b) return;
+    const pos = S.accounts[S.mode].positions.find((p) => p.id === +b.dataset.close);
+    if (pos && !S.paused) { E.requestClose(S, pos, "manuell"); render(); }
+  });
+  $("#pairCards").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-pair]"); if (!b) return;
+    UI.sel = b.dataset.pair; render();
+  });
+  $("#banners").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-act]"); if (!b) return;
+    if (b.dataset.act === "demo") startDemo();
+    else { if (b.dataset.act === "live") log("Zurück zu Live-Daten"); startLive(); }
+    render();
+  });
+  document.querySelector("nav.tabs").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-tab]"); if (!b) return;
+    UI.tab = b.dataset.tab;
+    document.querySelectorAll("nav.tabs [data-tab]").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
+    for (const t of ["live", "scan", "paper", "set"]) $("#tab-" + t).hidden = t !== UI.tab;
+    if (UI.tab === "set") { renderSettings(); UI.logLen = -1; }
+    render(); window.scrollTo(0, 0);
+  });
+  window.addEventListener("resize", () => { UI.dirty = true; render(); });
+
+  // ---------- start ----------
+  load();
+  UI.sel = S.pairs[0];
+  renderSettings();
+  startLive();
+  render();
+})();
+</script>
