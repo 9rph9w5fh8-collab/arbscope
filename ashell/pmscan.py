@@ -43,7 +43,7 @@ COLUMNS = ["ts_utc", "slug", "question", "outcome", "token_id", "best_bid", "bes
 # ---------------- HTTP (nur lesen) ----------------
 
 class Api:
-    def __init__(self, gamma: str = GAMMA, clob: str = CLOB, timeout: float = 15.0) -> None:
+    def __init__(self, gamma: str = GAMMA, clob: str = CLOB, timeout: float = 10.0) -> None:
         self.gamma, self.clob, self.timeout = gamma.rstrip("/"), clob.rstrip("/"), timeout
 
     def _call(self, method: str, url: str, body: object = None) -> object:
@@ -250,6 +250,8 @@ def run(api: Api, minutes: float, interval: float, n: int, fee: float, top: int,
     total, scans, hits, errors = 0, 0, 0, 0
     while time.monotonic() < end:
         t0 = time.monotonic()
+        if scans == 0:
+            print(f"Scan läuft, Verbindung zu Polymarket ... (Versuch {errors + 1})")
         try:
             rows = scan_once(api, n, fee)
             append_csv(out, rows)
@@ -290,10 +292,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--gamma", default=GAMMA, help=argparse.SUPPRESS)
     p.add_argument("--clob", default=CLOB, help=argparse.SUPPRESS)
     a = p.parse_args(argv)
+    try:  # a-Shell puffert sonst die Ausgabe, und der Bildschirm bleibt leer
+        sys.stdout.reconfigure(line_buffering=True)
+    except (AttributeError, ValueError):
+        pass
     if a.summary:
         print(summarize(a.out))
         return 0
     try:
+        print("Polymarket-Scanner startet (nur lesen).")
         return run(Api(a.gamma, a.clob), a.minutes, a.interval, a.markets, a.fee, a.top, not a.no_clear, a.out)
     except KeyboardInterrupt:
         print("\nGestoppt.\n")
